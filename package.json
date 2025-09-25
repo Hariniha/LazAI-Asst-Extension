@@ -1,0 +1,146 @@
+{
+  "name": "lazai",
+  "displayName": "LazAI Assistant",
+  "description": "AI-powered inline autocomplete and chat assistant using LazAI/Groq API",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.104.0"
+  },
+  "categories": [
+    "AI",
+    "Programming Languages",
+    "Other"
+  ],
+  "activationEvents": [
+    "onLanguage:javascript",
+    "onLanguage:typescript",
+    "onLanguage:python",
+    "onLanguage:java",
+    "onLanguage:c",
+    "onLanguage:cpp",
+    "onLanguage:csharp",
+    "onLanguage:go",
+    "onLanguage:rust",
+    "onLanguage:php",
+    "onLanguage:ruby",
+    "onLanguage:html",
+    "onLanguage:css",
+    "onLanguage:json",
+    "onLanguage:yaml",
+    "onLanguage:xml",
+    "onLanguage:markdown"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "configuration": {
+      "title": "LazAI Assistant",
+      "properties": {
+        "lazai.apiKey": {
+          "type": "string",
+          "default": "",
+          "description": "LazAI/Groq API key for AI completions and chat (fallback option)",
+          "markdownDescription": "API key for LazAI/Groq service. Get your API key from [Groq Console](https://console.groq.com/keys)."
+        },
+        "lazai.privateKey": {
+          "type": "string",
+          "default": "",
+          "description": "Your wallet private key for Alith authentication (64 hex characters, no 0x prefix)",
+          "markdownDescription": "Wallet private key for blockchain authentication with Alith Agent. Must be exactly 64 hexadecimal characters (0-9, a-f, A-F) without the 0x prefix.",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "patternErrorMessage": "Private key must be exactly 64 hexadecimal characters"
+        },
+        "lazai.nodeAddress": {
+          "type": "string",
+          "default": "0xc3e98E8A9aACFc9ff7578C2F3BA48CA4477Ecf49",
+          "description": "Alith inference node address",
+          "markdownDescription": "The address of the Alith inference node to use."
+        },
+        "lazai.useAlith": {
+          "type": "boolean",
+          "default": true,
+          "description": "Use Alith Agent instead of direct Groq API",
+          "markdownDescription": "Enable to use decentralized Alith Agent, disable to use direct Groq API."
+        },
+        "lazai.model": {
+          "type": "string",
+          "default": "openai/gpt-oss-120b",
+          "enum": [
+            "openai/gpt-oss-120b",
+            "openai/gpt-oss-20b",
+            "whisper-large-v3",
+            "whisper-large-v3-turbo"
+            
+          ],
+          "description": "Model to use for completions"
+        },
+        "lazai.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable LazAI inline completions"
+        },
+        "lazai.maxTokens": {
+          "type": "number",
+          "default": 100,
+          "minimum": 1,
+          "maximum": 500,
+          "description": "Maximum tokens for inline completions"
+        },
+        "lazai.chatEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Enable/disable chat functionality"
+        },
+        "lazai.fileId": {
+          "type": "number",
+          "default": 10,
+          "description": "File ID for DAT file anchoring in Alith",
+          "markdownDescription": "The file ID used for DAT file anchoring in the Alith system."
+        }
+      }
+    },
+    "commands": [
+      {
+        "command": "lazai.openChat",
+        "title": "Open LazAI Chat",
+        "category": "LazAI"
+      },
+      {
+        "command": "lazai.toggleInlineCompletion",
+        "title": "Toggle Inline Completion",
+        "category": "LazAI"
+      },
+      {
+        "command": "lazai.testConnection",
+        "title": "Test API Connection",
+        "category": "LazAI"
+      },
+      {
+        "command": "lazai.reinitializeAlith",
+        "title": "Reinitialize Alith Connection",
+        "category": "LazAI"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "vscode-test"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.10",
+    "@types/node": "22.x",
+    "@types/vscode": "^1.104.0",
+    "@typescript-eslint/eslint-plugin": "^8.42.0",
+    "@typescript-eslint/parser": "^8.42.0",
+    "@vscode/test-cli": "^0.0.11",
+    "@vscode/test-electron": "^2.5.2",
+    "eslint": "^9.34.0",
+    "typescript": "^5.9.2"
+  },
+  "dependencies": {
+    "alith": "^0.12.3"
+  }
+}
