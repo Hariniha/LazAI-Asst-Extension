@@ -1,7 +1,7 @@
 {
   "name": "lazai",
   "displayName": "LazAI Assistant",
-  "description": "AI-powered inline autocomplete and chat assistant using LazAI/Groq API",
+  "description": "AI-powered chat assistant with inline chat commands using LazAI/Groq API",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.104.0"
@@ -12,23 +12,7 @@
     "Other"
   ],
   "activationEvents": [
-    "onLanguage:javascript",
-    "onLanguage:typescript",
-    "onLanguage:python",
-    "onLanguage:java",
-    "onLanguage:c",
-    "onLanguage:cpp",
-    "onLanguage:csharp",
-    "onLanguage:go",
-    "onLanguage:rust",
-    "onLanguage:php",
-    "onLanguage:ruby",
-    "onLanguage:html",
-    "onLanguage:css",
-    "onLanguage:json",
-    "onLanguage:yaml",
-    "onLanguage:xml",
-    "onLanguage:markdown"
+    "onStartupFinished"
   ],
   "main": "./out/extension.js",
   "contributes": {
@@ -58,8 +42,8 @@
         "lazai.useAlith": {
           "type": "boolean",
           "default": true,
-          "description": "Use Alith Agent instead of direct Groq API",
-          "markdownDescription": "Enable to use decentralized Alith Agent, disable to use direct Groq API."
+          "description": "Use Alith blockchain for AI completions (requires private key)",
+          "markdownDescription": "Enable to use decentralized AI via Alith blockchain. Requires a valid private key. When disabled, uses Groq API."
         },
         "lazai.model": {
           "type": "string",
@@ -72,18 +56,6 @@
             
           ],
           "description": "Model to use for completions"
-        },
-        "lazai.enabled": {
-          "type": "boolean",
-          "default": true,
-          "description": "Enable/disable LazAI inline completions"
-        },
-        "lazai.maxTokens": {
-          "type": "number",
-          "default": 100,
-          "minimum": 1,
-          "maximum": 500,
-          "description": "Maximum tokens for inline completions"
         },
         "lazai.chatEnabled": {
           "type": "boolean",
@@ -105,13 +77,23 @@
         "category": "LazAI"
       },
       {
-        "command": "lazai.toggleInlineCompletion",
-        "title": "Toggle Inline Completion",
+        "command": "lazai.testConnection",
+        "title": "Test API Connection",
         "category": "LazAI"
       },
       {
-        "command": "lazai.testConnection",
-        "title": "Test API Connection",
+        "command": "lazai.clearHistory",
+        "title": "Switch Chat Session",
+        "category": "LazAI"
+      },
+      {
+        "command": "lazai.newChat",
+        "title": "New Chat Session",
+        "category": "LazAI"
+      },
+      {
+        "command": "lazai.listSessions",
+        "title": "List Chat Sessions",
         "category": "LazAI"
       },
       {

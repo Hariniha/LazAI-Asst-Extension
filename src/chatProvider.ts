@@ -1,12 +1,138 @@
 import * as vscode from 'vscode';
 import { LazAIService, ChatMessage } from './lazaiService';
 
+interface ChatSession {
+    id: string;
+    name: string;
+    messages: Array<{role: 'user' | 'assistant', content: string}>;
+    createdAt: number;
+}
+
 export class LazAIChatProvider {
     private lazaiService: LazAIService;
     private panel: vscode.WebviewPanel | undefined;
+    private chatSessions: ChatSession[] = [];
+    private currentSessionId: string | null = null;
 
     constructor(lazaiService: LazAIService) {
         this.lazaiService = lazaiService;
+        this.loadSessions();
+    }
+
+    private loadSessions(): void {
+        // For now, we'll store sessions in memory. In a full implementation,
+        // we'd use vscode.ExtensionContext.workspaceState or globalState
+        this.chatSessions = [];
+    }
+
+    private saveSession(): void {
+        // Placeholder for saving current session
+        if (this.currentSessionId) {
+            const session = this.chatSessions.find(s => s.id === this.currentSessionId);
+            if (session) {
+                // Auto-save happens in real-time as messages are added
+                console.log(`Session "${session.name}" saved with ${session.messages.length} messages`);
+            }
+        }
+    }
+
+    private createNewSession(firstMessage?: string): string {
+        const sessionId = `session_${Date.now()}`;
+        const sessionName = firstMessage 
+            ? firstMessage.substring(0, 30) + (firstMessage.length > 30 ? '...' : '')
+            : `Chat ${this.chatSessions.length + 1}`;
+
+        const newSession: ChatSession = {
+            id: sessionId,
+            name: sessionName,
+            messages: [],
+            createdAt: Date.now()
+        };
+
+        this.chatSessions.push(newSession);
+        this.currentSessionId = sessionId;
+
+        // Keep only the latest 10 sessions
+        if (this.chatSessions.length > 10) {
+            this.chatSessions = this.chatSessions.slice(-10);
+        }
+
+        return sessionId;
+    }
+
+    private addMessageToSession(role: 'user' | 'assistant', content: string): void {
+        if (!this.currentSessionId) {
+            this.createNewSession(role === 'user' ? content : undefined);
+        }
+
+        const session = this.chatSessions.find(s => s.id === this.currentSessionId);
+        if (session) {
+            session.messages.push({ role, content });
+            
+            // Keep only the latest 50 messages per session
+            if (session.messages.length > 50) {
+                session.messages = session.messages.slice(-50);
+            }
+
+            this.saveSession();
+        }
+    }
+
+    public switchToSession(sessionId: string): void {
+        const session = this.chatSessions.find(s => s.id === sessionId);
+        if (session) {
+            this.currentSessionId = sessionId;
+            this.refreshChatDisplay();
+            vscode.window.showInformationMessage(`Switched to chat: ${session.name}`);
+        }
+    }
+
+    public createNewChat(): void {
+        const sessionId = this.createNewSession();
+        this.refreshChatDisplay();
+        vscode.window.showInformationMessage('Started new chat session');
+    }
+
+    private refreshChatDisplay(): void {
+        if (this.panel) {
+            // Clear current display first
+            this.panel.webview.postMessage({
+                command: 'clearChat'
+            });
+
+            // Then reload session messages
+            const session = this.chatSessions.find(s => s.id === this.currentSessionId);
+            if (session && session.messages.length > 0) {
+                // Send messages to refresh the webview
+                session.messages.forEach(msg => {
+                    this.panel?.webview.postMessage({
+                        command: 'addMessage',
+                        message: { role: msg.role, content: msg.content }
+                    });
+                });
+            }
+        }
+    }
+
+    public listSessions(): void {
+        if (this.chatSessions.length === 0) {
+            vscode.window.showInformationMessage('No chat sessions found');
+            return;
+        }
+
+        const items = this.chatSessions.map(session => ({
+            label: session.name,
+            description: `${session.messages.length} messages - ${new Date(session.createdAt).toLocaleString()}`,
+            sessionId: session.id
+        }));
+
+        vscode.window.showQuickPick(items, {
+            placeHolder: 'Select a chat session to switch to'
+        }).then(selected => {
+            if (selected) {
+                this.switchToSession(selected.sessionId);
+            }
+        });
     }
 
     public openChatPanel() {
@@ -26,6 +152,16 @@ export class LazAIChatProvider {
         );
 
         this.panel.webview.html = this.getWebviewContent();
+
+        // Initialize with current session or create a new one
+        if (!this.currentSessionId || this.chatSessions.length === 0) {
+            this.createNewSession();
+        }
+        
+        // Load the current session messages after webview is ready
+        setTimeout(() => {
+            this.refreshChatDisplay();
+        }, 100);
 
         this.panel.webview.onDidReceiveMessage(
             async message => {
@@ -47,15 +183,20 @@ export class LazAIChatProvider {
             return;
         }
 
+        // Add user message to current session
+        this.addMessageToSession('user', userMessage);
+
         // Check if API is configured
         if (!this.lazaiService.isConfigured()) {
+            const errorMessage = '❌ **API Key Missing**\n\nPlease configure your LazAI API key in VS Code settings:\n1. Press `Ctrl+,` to open Settings\n2. Search for "LazAI"\n3. Enter your Groq API key in "LazAI: Api Key"\n\nGet your free API key at: https://console.groq.com/keys';
             this.panel.webview.postMessage({
                 command: 'addMessage',
                 message: {
                     role: 'assistant',
-                    content: '❌ **API Key Missing**\n\nPlease configure your LazAI API key in VS Code settings:\n1. Press `Ctrl+,` to open Settings\n2. Search for "LazAI"\n3. Enter your Groq API key in "LazAI: Api Key"\n\nGet your free API key at: https://console.groq.com/keys'
+                    content: errorMessage
                 }
             });
+            this.addMessageToSession('assistant', errorMessage);
             return;
         }
 
@@ -67,11 +208,18 @@ export class LazAIChatProvider {
 
             console.log('LazAI: Sending chat request:', userMessage);
 
+            // Get conversation history from current session
+            const currentSession = this.chatSessions.find(s => s.id === this.currentSessionId);
+            const conversationHistory: ChatMessage[] = currentSession 
+                ? currentSession.messages.slice(-6).map(msg => ({ role: msg.role, content: msg.content }))
+                : [];
+
             const messages: ChatMessage[] = [
                 {
                     role: 'system',
-                    content: 'You are LazAI, a helpful programming assistant. Provide clear, concise, and helpful responses to programming questions. Format code blocks properly with syntax highlighting.'
+                    content: 'You are LazAI, a helpful programming assistant. Provide clear, concise, and helpful responses to programming questions. Format code blocks properly with syntax highlighting. You have access to conversation history to provide contextual responses.'
                 },
+                ...conversationHistory.slice(0, -1), // Exclude the last message (current user message) to avoid duplication
                 {
                     role: 'user',
                     content: userMessage
@@ -92,13 +240,15 @@ export class LazAIChatProvider {
             });
 
             if (response.error) {
+                const errorMsg = `❌ **Error**: ${response.error}\n\nPlease check:\n- Your API key is valid\n- You have sufficient API credits\n- Your internet connection is working`;
                 this.panel.webview.postMessage({
                     command: 'addMessage',
                     message: {
                         role: 'assistant',
-                        content: `❌ **Error**: ${response.error}\n\nPlease check:\n- Your API key is valid\n- You have sufficient API credits\n- Your internet connection is working`
+                        content: errorMsg
                     }
                 });
+                this.addMessageToSession('assistant', errorMsg);
             } else {
                 this.panel.webview.postMessage({
                     command: 'addMessage',
@@ -107,6 +257,7 @@ export class LazAIChatProvider {
                         content: response.text
                     }
                 });
+                this.addMessageToSession('assistant', response.text);
             }
         } catch (error) {
             console.error('LazAI Chat Error:', error);
@@ -116,13 +267,15 @@ export class LazAIChatProvider {
                 command: 'hideTyping'
             });
 
+            const errorMsg = `❌ **Unexpected Error**: ${error instanceof Error ? error.message : String(error)}`;
             this.panel.webview.postMessage({
                 command: 'addMessage',
                 message: {
                     role: 'assistant',
-                    content: `❌ **Unexpected Error**: ${error instanceof Error ? error.message : String(error)}`
+                    content: errorMsg
                 }
             });
+            this.addMessageToSession('assistant', errorMsg);
         }
     }
 
@@ -236,22 +389,30 @@ export class LazAIChatProvider {
             background: linear-gradient(135deg, #0f1419 0%, #1a2332 50%, #243447 100%);
             color: #e1e5eb;
             margin: 0;
-            padding: 10px;
+            padding: 0;
             height: 100vh;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
         
         #chat-container {
             flex: 1;
             overflow-y: auto;
             padding: 15px;
-            border: 1px solid #2d3748;
-            border-radius: 10px;
-            margin-bottom: 15px;
             background: rgba(26, 35, 50, 0.6);
             backdrop-filter: blur(10px);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            min-height: 0;
+        }
+        
+        #input-container {
+            flex-shrink: 0;
+            display: flex;
+            gap: 12px;
+            padding: 15px;
+            background: rgba(26, 35, 50, 0.8);
+            border-top: 1px solid #2d3748;
+            backdrop-filter: blur(10px);
         }
         
         .message {
@@ -338,11 +499,12 @@ export class LazAIChatProvider {
         }
         
         #input-container {
+            flex-shrink: 0;
             display: flex;
             gap: 12px;
-            padding: 5px;
-            background: rgba(26, 35, 50, 0.4);
-            border-radius: 10px;
+            padding: 15px;
+            background: rgba(26, 35, 50, 0.8);
+            border-top: 1px solid #2d3748;
             backdrop-filter: blur(10px);
         }
         
@@ -526,10 +688,18 @@ export class LazAIChatProvider {
                 case 'hideTyping':
                     hideTyping();
                     break;
+                case 'clearChat':
+                    clearChat();
+                    break;
             }
         });
         
-        addMessage('assistant', 'Hello! I am LazAI, your programming assistant. Ask me anything about code, programming concepts, or get help with your development tasks.');
+        function clearChat() {
+            const container = document.getElementById('chat-container');
+            container.innerHTML = '';
+            // Add welcome message for new chats
+            addMessage('assistant', 'Hello! I am LazAI, your programming assistant. Ask me anything about code, programming concepts, or get help with your development tasks.');
+        }
     </script>
 </body>
 </html>`;

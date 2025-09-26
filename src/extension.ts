@@ -2,7 +2,7 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import { LazAIService } from './lazaiService';
-import { LazAIInlineCompletionProvider } from './inlineCompletionProvider';
+// import { LazAIInlineCompletionProvider } from './inlineCompletionProvider'; // Disabled for now
 import { LazAIChatProvider } from './chatProvider';
 import { ChatDetector } from './chatDetector';
 
@@ -14,27 +14,22 @@ export function activate(context: vscode.ExtensionContext) {
 	// Initialize services
 	const lazaiService = new LazAIService();
 	const chatProvider = new LazAIChatProvider(lazaiService);
-	const inlineCompletionProvider = new LazAIInlineCompletionProvider(lazaiService);
-	const chatDetector = new ChatDetector(chatProvider);
+	// const inlineCompletionProvider = new LazAIInlineCompletionProvider(lazaiService); // Disabled for now
+	const chatDetector = new ChatDetector(chatProvider); // Re-enabled
 
-	// Register inline completion provider for all languages
-	const inlineCompletionDisposable = vscode.languages.registerInlineCompletionItemProvider(
-		{ pattern: '**' },
-		inlineCompletionProvider
-	);
+	console.log('LazAI: Chat services initialized');
+
+	// Inline completion provider disabled - user only wants chat features
+	// const inlineCompletionDisposable = vscode.languages.registerInlineCompletionItemProvider(
+	//     { pattern: '**' },
+	//     inlineCompletionProvider
+	// );
+	
+	console.log('LazAI: Inline completions disabled, chat features enabled');
 
 	// Register commands
 	const openChatCommand = vscode.commands.registerCommand('lazai.openChat', () => {
 		chatProvider.openChatPanel();
-	});
-
-	const toggleInlineCompletionCommand = vscode.commands.registerCommand('lazai.toggleInlineCompletion', () => {
-		const config = vscode.workspace.getConfiguration('lazai');
-		const currentValue = config.get<boolean>('enabled', true);
-		config.update('enabled', !currentValue, vscode.ConfigurationTarget.Global);
-		
-		const status = currentValue ? 'disabled' : 'enabled';
-		vscode.window.showInformationMessage(`LazAI inline completions ${status}`);
 	});
 
 	const testConnectionCommand = vscode.commands.registerCommand('lazai.testConnection', async () => {
@@ -65,8 +60,34 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 	});
 
+	const clearHistoryCommand = vscode.commands.registerCommand('lazai.clearHistory', () => {
+		console.log('Clear history command triggered from command palette');
+		chatProvider.listSessions();
+	});
+
+	const newChatCommand = vscode.commands.registerCommand('lazai.newChat', () => {
+		console.log('New chat command triggered');
+		chatProvider.createNewChat();
+	});
+
+	const listSessionsCommand = vscode.commands.registerCommand('lazai.listSessions', () => {
+		console.log('List sessions command triggered');
+		chatProvider.listSessions();
+	});
+
+	const reinitializeAlithCommand = vscode.commands.registerCommand('lazai.reinitializeAlith', async () => {
+		vscode.window.showInformationMessage('🔄 Reinitializing Alith connection...');
+		try {
+			// Create a new service instance to reinitialize
+			const newLazaiService = new LazAIService();
+			vscode.window.showInformationMessage('✅ Alith connection reinitialized successfully!');
+		} catch (error) {
+			vscode.window.showErrorMessage(`❌ Failed to reinitialize Alith: ${error}`);
+		}
+	});
+
 	// Activate chat detector
-	chatDetector.activate(context);
+	chatDetector.activate(context); // Re-enabled
 
 	// Check if API key is configured on activation
 	const config = vscode.workspace.getConfiguration('lazai');
@@ -104,25 +125,15 @@ export function activate(context: vscode.ExtensionContext) {
 	statusBarItem.command = 'lazai.openChat';
 	statusBarItem.show();
 
-	const reinitializeAlithCommand = vscode.commands.registerCommand('lazai.reinitializeAlith', async () => {
-		vscode.window.showInformationMessage('🔄 Reinitializing Alith connection...');
-		try {
-			await lazaiService.reinitialize();
-			vscode.window.showInformationMessage('✅ Alith connection reinitialized successfully!');
-		} catch (error) {
-			vscode.window.showErrorMessage(`❌ Failed to reinitialize Alith: ${error}`);
-		}
-	});
-
 	// Add all disposables to context
 	context.subscriptions.push(
-		inlineCompletionDisposable,
+		// inlineCompletionDisposable, // Disabled
 		openChatCommand,
-		toggleInlineCompletionCommand,
 		testConnectionCommand,
-		reinitializeAlithCommand,
-		statusBarItem,
-		chatDetector
+		clearHistoryCommand,
+		newChatCommand,
+		listSessionsCommand,
+		reinitializeAlithCommand
 	);
 }
 

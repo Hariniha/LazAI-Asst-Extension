@@ -59,10 +59,19 @@ export class ChatDetector {
     private async handleChatTrigger(document: vscode.TextDocument, line: number, question: string, originalLineText: string) {
         const editor = vscode.window.activeTextEditor;
         if (!editor) {
+            console.log('LazAI: No active editor for chat trigger');
             return;
         }
 
         try {
+            console.log('LazAI: Handling chat trigger:', question);
+            
+            // Validate line number
+            if (line < 0 || line >= document.lineCount) {
+                console.error('LazAI: Invalid line number:', line);
+                return;
+            }
+
             // Remove the "chat " line
             await editor.edit(editBuilder => {
                 const lineRange = new vscode.Range(
@@ -72,14 +81,19 @@ export class ChatDetector {
                 editBuilder.delete(lineRange);
             });
 
+            // Create a valid position (ensure it's within document bounds)
+            const validLine = Math.max(0, Math.min(line, document.lineCount - 1));
+            const position = new vscode.Position(validLine, 0);
+
             // Process the chat query
             await this.chatProvider.handleInlineChatQuery(
                 question, 
                 document, 
-                new vscode.Position(line, 0)
+                position
             );
 
         } catch (error) {
+            console.error('LazAI: Chat detection error:', error);
             vscode.window.showErrorMessage(`Chat detection error: ${error}`);
         }
     }
