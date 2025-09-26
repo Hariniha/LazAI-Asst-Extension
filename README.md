@@ -1,83 +1,95 @@
-# LazAI Assistant - AI-Powered VS Code Extension
+# LazAI Assistant - AI-Powered VS Code Chat Extension
 
-A professional AI coding assistant that brings GitHub Copilot-style completions and intelligent chat to VS Code.
-
-## ✨ What This Extension Does
-
-### 🚀 Inline Code Completions (Ghost Text)
-- **Smart autocomplete suggestions** that appear as you type
-- **GitHub Copilot-style ghost text** in gray color
-- **Context-aware completions** based on your current code
-- **Multi-language support** for 17+ programming languages
-- **Tab to accept** suggestions, Esc to dismiss
-
-### 💬 Interactive AI Chat
-- **Chat Panel**: Beautiful dark blue gradient interface for coding questions
-- **Inline Chat**: Type `chat <your question>` in any file for instant answers
-- **Smart Responses**: AI answers appear as comments in your code
-- **Markdown Support**: Rich formatting for better readability
-
-### 🔗 Dual AI Backend
-- **Groq API**: Fast, reliable AI completions (recommended for testing)
-- **Alith Agent**: Blockchain-based unlimited AI access (advanced users)
-- **Smart Fallback**: Automatically switches between services
-- **Rate Limiting Protection**: Prevents API quota issues
-
-### ⚙️ Smart Features
-- **Language Detection**: Works with JavaScript, Python, TypeScript, HTML, CSS, and more
-- **Context Analysis**: Uses surrounding code to provide relevant suggestions
-- **Performance Optimized**: Lightweight with efficient resource usage
-- **Easy Configuration**: Simple VS Code settings integration
-
-## 🎯 Key Capabilities
-
-**What You Get:**
-- ✅ Real-time code completion suggestions
-- ✅ AI-powered coding assistance and help
-- ✅ Professional-grade inline completions
-- ✅ Interactive chat for programming questions
-- ✅ Multi-language support across popular programming languages
-- ✅ Beautiful, modern user interface
-- ✅ Fast response times and reliable performance
-
-**Perfect For:**
-- Developers who want GitHub Copilot-style assistance
-- Programmers working across multiple languages
-- Teams looking for AI coding help
-- Students learning programming concepts
-- Anyone who wants intelligent code completions
-
-## 🏗️ Technical Architecture
-
-**Built With:**
-- **TypeScript**: Type-safe, professional codebase
-- **VS Code Extension API**: Native integration with editor
-- **Groq API**: High-speed AI inference
-- **Alith Blockchain**: Decentralized AI network (optional)
-- **WebView**: Modern chat interface with custom styling
-
-**Performance:**
-- **Activation**: Language-specific (no startup impact)
-- **Memory**: ~5-10MB additional usage  
-- **Response Time**: 1-5 seconds for completions
-- **Supported Languages**: JavaScript, TypeScript, Python, Java, C/C++, C#, Go, Rust, PHP, Ruby, HTML, CSS, JSON, YAML, XML, Markdown
-
-## 🔧 Available Commands
+🎮 Commands
 
 Access via Command Palette (`Ctrl+Shift+P`):
-- **LazAI: Open Chat** - Launch interactive AI chat panel
-- **LazAI: Test API Connection** - Verify your AI service setup
-- **LazAI: Toggle Completions** - Enable/disable inline suggestions
 
-## 📊 Extension Stats
+- **LazAI: Open LazAI Chat** - Open the chat panel
+- **LazAI: New Chat Session** - Create a new chat conversation
+- **LazAI: List Chat Sessions** - Switch between chat sessions
+- **LazAI: Test API Connection** - Verify your API configuration
+- **LazAI: Reinitialize Alith Connection** - Reset Alith connection
 
-- **Total Code**: ~1,200 lines of TypeScript
-- **Architecture**: Service-oriented design with modular components
-- **Testing**: Comprehensive manual testing across multiple scenarios
-- **Documentation**: Complete user and developer guides
-- **Performance**: Optimized for minimal VS Code impact
+## 🛠️ Getting API Keys
+
+### Groq API Key (Free)
+1. Visit [console.groq.com](https://console.groq.com/)
+2. Sign up for free account
+3. Navigate to API Keys section
+4. Create new API key
+5. Copy key to VS Code settings
+
+### Alith Private Key (Advanced)
+1. Set up Alith wallet
+2. Export your 64-character hex private key (no 0x prefix)
+3. Add to VS Code settings
+4. Ensure sufficient balance for AI requests
+
+## 🎯 Perfect For
+
+- **Developers** who want AI coding assistance
+- **Students** learning programming concepts  
+- **Teams** collaborating on code projects
+- **Anyone** who needs quick programming help
+- **Blockchain enthusiasts** wanting decentralized AI
+
+## 🏗️ Technical Details
+
+- **Built with TypeScript** for reliability
+- **VS Code Extension API** for native integration
+- **Dual backend architecture** for maximum uptime
+- **Session management** for organized conversations
+- **Smart comment detection** across programming languages
+- **Lightweight** - minimal resource usage
 
 ---
+
+**Made with ❤️ for the coding community**and for VS Code with dual backend support (Alith blockchain + Groq API).
+
+## ✨ Features
+
+### � Chat Panel
+- **Beautiful chat interface** with dark blue gradient design
+- **Session management** - Create and switch between named chat conversations
+- **Context preservation** - Each session maintains conversation history
+- **Markdown support** - Rich formatting for better readability
+
+### 🎯 Inline Chat Commands
+- **Type anywhere**: `// chat <your question>` in any file and press Enter
+- **Multi-language support**: Works with `//`, `#`, `/* */` comment styles
+- **Instant response** - Chat panel opens automatically with your question
+- **Smart detection** - Recognizes chat commands in JavaScript, Python, HTML, etc.
+
+### 🔗 Dual AI Backend
+- **Alith Blockchain AI**: Decentralized, unlimited access (primary)
+- **Groq API**: Fast, reliable cloud fallback (secondary)
+- **Smart failover**: Automatically switches if primary service fails
+- **Flexible configuration**: Use either service or both
+
+## 🚀 Quick Start
+
+### Installation
+1. Install the extension from VS Code marketplace
+2. Configure your AI service (see Configuration below)
+3. Start chatting!
+
+### Basic Usage
+
+**Chat Panel:**
+- Press `Ctrl+Shift+P`
+- Type "LazAI: Open LazAI Chat"
+- Start asking programming questions
+
+**Inline Chat:**
+```javascript
+// chat how do I create a React component?
+// Press Enter - chat opens with your question
+```
+
+```python  
+# chat explain Python decorators
+# Press Enter - chat opens automatically
+```
 
 **Ready to supercharge your coding with AI assistance? See [USAGE.md](USAGE.md) for simple setup instructions!**
 

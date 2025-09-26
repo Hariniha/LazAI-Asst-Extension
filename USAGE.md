@@ -1,122 +1,105 @@
-# 🚀 LazAI Usage Guide - Quick Start
+# 🚀 LazAI Usage Guide - Chat Features# 🚀 LazAI Usage Guide - Chat Features
 
-Simple instructions to get AI coding assistance in VS Code.
 
-## ⚡ Quick Setup (2 minutes)
 
-### Step 1: Get API Key
-1. Go to [console.groq.com/keys](https://console.groq.com/keys)
+Simple instructions to use LazAI chat features in VS Code.Simple instructions to use LazAI chat features in VS Code.
+
+## ⚡ Quick Setup (2 minutes)## ⚡ Quick Setup (2 minutes)
+
+
+
+### Step 1: Choose Your AI Service
+
+
+
+**Option A: Groq API (Recommended for beginners)**
+1. Go to [console.groq.com](https://console.groq.com/)
 2. Sign up (free) and create an API key
 3. Copy the key (starts with `gsk_...`)
 
+
+
+**Option B: Alith Blockchain (Advanced users)**
+
+1. Set up Alith wallet
+2. Get your 64-character private key (no 0x prefix)
+
+
+
 ### Step 2: Configure VS Code
+
 1. Open Settings: `Ctrl+,` (Windows) or `Cmd+,` (Mac)
 2. Search: **"LazAI"**
 3. Set these values:
-   - **LazAI: Api Key** = `gsk_your_key_here`
-   - **LazAI: Use Alith** = `false` (use Groq)
-   - **LazAI: Enabled** = `true`
 
-### Step 3: Start Coding!
-Open any `.js`, `.py`, `.ts` file and start typing!
 
----
+**For Alith:**
+
+- **LazAI: Private Key** = `your_64_hex_key`
+
+- **LazAI: Use Alith** = `true`
+
+**For Groq:**
+
+- **LazAI: Api Key** = `gsk_your_key_here`
+
+- **LazAI: Use Alith** = `false`
+
+**For Both (Recommended):**
+
+- Set both keys above
+- Alith tries first, Groq as backup
+------
+
+
 
 ## 🎯 How to Use
 
-### 1. 👻 Inline Completions (Ghost Text)
 
-**What it does:** Shows AI suggestions as gray text while you type
+## 1. 💬 Chat Panel#
 
-**How to use:**
-1. **Type code** in any supported file
-2. **Pause for 2-3 seconds**
-3. **Gray ghost text** appears with suggestions
-4. **Press Tab** to accept, **Esc** to dismiss
-
-**Examples that trigger completions:**
-```javascript
-function calculate() {
-    // ← Ghost text appears here
-
-const result = 
-    // ← Suggestion appears here
-
-if (true) {
-    // ← AI suggests what goes here
-```
-
-### 2. 💬 Inline Chat
-
-**What it does:** Ask questions directly in your code
+**Open chat interface for extended conversations**
 
 **How to use:**
-1. **Type:** `chat how do I create a loop`
-2. **Press Enter**
-3. **AI answer** appears as a comment in your code
 
-**Example:**
-```javascript
-// You type this:
-chat how do I create a for loop in JavaScript
+1. Press `Ctrl+Shift+P`
+2. Type: **"LazAI: Open LazAI Chat"**
+3. Chat panel opens on the side
+4. Start typing your questions!
+         or
+    In the Task bar you can see the 🤖LazAI - click on then the chat panel opens on the side
 
-// AI responds with:
-// To create a for loop in JavaScript:
-// for (let i = 0; i < 10; i++) {
-//     console.log(i);
-// }
-```
+**Features:**
+- Beautiful dark gradient interface
+- Session management (multiple conversations)
+- Conversation history
 
-### 3. 🗨️ Chat Panel
 
-**What it does:** Open a dedicated chat window for longer conversations
+### 2. 🎯 Inline Chat Commands
 
+**Quick chat directly in your code files**
 **How to use:**
-1. **Press:** `Ctrl+Shift+P`
-2. **Type:** "LazAI: Open Chat"
-3. **Ask questions** in the blue chat panel
 
----
+1. Type `// chat ` followed by your question
+2. AI responds instantly in a popup
+3. Perfect for quick questions while coding
 
-## 🔧 Commands Available
 
-Open Command Palette (`Ctrl+Shift+P`) and use:
 
-- **"LazAI: Open Chat"** - Open chat window
-- **"LazAI: Test API Connection"** - Check if setup works
-- **"LazAI: Toggle Completions"** - Turn on/off ghost text
+**Learning:**That's it! You now have:
 
----
+1. Create new session named "Learning React"- ✅ **AI completions** as you type (like GitHub Copilot),you can use multiple session and switch between the tabs.
 
-## 🐛 Troubleshooting
+2. Ask questions about concepts- ✅ **Instant answers** to coding questions
 
-### No ghost text appearing?
-1. **Check Settings:** Make sure API key is set and `LazAI: Enabled = true`
-2. **Wait:** Ghost text takes 2-3 seconds to appear
-3. **Use trigger patterns:** Type `function test() {` and wait
-4. **Check file type:** Works with `.js`, `.py`, `.ts`, `.html`, `.css` files
+3. Get explanations and examples- ✅ **Chat interface** for longer conversations
 
-### "API key not configured" error?
-1. **Get Groq API key:** [console.groq.com/keys](https://console.groq.com/keys)
-2. **Add to settings:** Search "LazAI" in VS Code settings
-3. **Set LazAI: Api Key** to your key
-
-### Chat not working?
-1. **Try command:** `Ctrl+Shift+P` → "LazAI: Open Chat"
-2. **For inline chat:** Type `chat your question` and press Enter
-3. **Check API key** is configured correctly
-
----
-
-## 🎊 You're Ready!
-
-That's it! You now have:
-- ✅ **AI completions** as you type (like GitHub Copilot)
-- ✅ **Instant answers** to coding questions
-- ✅ **Chat interface** for longer conversations
 - ✅ **Multi-language support** for all popular languages
+
+---
 
 **Happy coding with AI assistance!** 🚀
 
+**Happy coding!🎉**
 ---
 
